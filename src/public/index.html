@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PromptPay Guard — Zero-Trust AI Agent Payment Firewall</title>
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            guard: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              500: '#0284c7',
+              600: '#0369a1',
+              900: '#0c4a6e',
+              950: '#082f49'
+            },
+            cyber: {
+              bg: '#090d16',
+              card: '#111827',
+              border: '#1f293d',
+              accent: '#38bdf8'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @keyframes pulse-subtle {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.8; transform: scale(1.02); }
+    }
+    .pulse-live {
+      animation: pulse-subtle 2s infinite ease-in-out;
+    }
+    @keyframes slide-in-right {
+      0% { opacity: 0; transform: translateX(110%); }
+      100% { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes slide-out-right {
+      0% { opacity: 1; transform: translateX(0); }
+      100% { opacity: 0; transform: translateX(110%); }
+    }
+    .toast-slide-in {
+      animation: slide-in-right 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .toast-slide-out {
+      animation: slide-out-right 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #090d16;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1f293d;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #374151;
+    }
+  </style>
+</head>
+<body class="bg-[#070b14] text-slate-100 min-h-screen flex flex-col font-sans selection:bg-cyan-500 selection:text-white">
+
+  <!-- Top Navigation Header -->
+  <header class="border-b border-cyber-border bg-[#0b101d]/90 backdrop-blur sticky top-0 z-50 px-6 py-3">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-cyan-500/20">
+          <i data-lucide="shield-alert" class="w-6 h-6 text-white"></i>
+        </div>
+        <div>
+          <div class="flex items-center space-x-2">
+            <h1 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+              PromptPay <span class="text-cyan-400 font-extrabold">Guard</span>
+            </h1>
+            <span class="text-[10px] font-semibold bg-cyan-950/80 border border-cyan-800/80 text-cyan-300 px-2 py-0.5 rounded-full">v1.0 Zero-Trust</span>
+            <span class="text-[10px] font-semibold bg-indigo-950/80 border border-indigo-800/80 text-indigo-300 px-2 py-0.5 rounded-full">PayPal Hackathon 2026</span>
+          </div>
+          <p class="text-xs text-slate-400">Deterministic In-Memory Fast Heuristics + Gemini 1.5 Flash Intent Defense</p>
+        </div>
+      </div>
+
+      <!-- Live Stream Status & Actions -->
+      <div class="flex items-center space-x-3">
+        <div class="flex items-center space-x-2 bg-slate-900/90 border border-slate-800 px-3 py-1.5 rounded-lg text-xs">
+          <span id="sse-indicator" class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981] animate-pulse"></span>
+          <span id="sse-status" class="text-slate-300 font-mono text-[11px]">LIVE SSE STREAM</span>
+        </div>
+
+        <!-- Export Audit Trail & Compliance Ledger -->
+        <div class="flex items-center bg-slate-900/90 border border-slate-700/80 rounded-lg p-0.5 text-xs shadow-inner">
+          <span class="px-2 text-[10px] uppercase font-mono text-slate-400 font-semibold border-r border-slate-800 flex items-center gap-1">
+            <i data-lucide="file-spreadsheet" class="w-3 h-3 text-cyan-400"></i> Audit Ledger
+          </span>
+          <button id="btn-export-csv" title="Download Compliance Ledger in CSV" class="px-2.5 py-1 text-[11px] font-semibold text-slate-200 hover:text-white hover:bg-slate-800 rounded transition flex items-center gap-1">
+            <i data-lucide="download" class="w-3 h-3 text-emerald-400"></i> CSV
+          </button>
+          <button id="btn-export-json" title="Download Compliance Ledger in JSON" class="px-2.5 py-1 text-[11px] font-semibold text-slate-200 hover:text-white hover:bg-slate-800 rounded transition flex items-center gap-1 border-l border-slate-800">
+            <i data-lucide="file-json" class="w-3 h-3 text-blue-400"></i> JSON
+          </button>
+        </div>
+
+        <button id="btn-reset-stats" class="text-xs bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white px-3 py-1.5 rounded-lg border border-slate-700 transition flex items-center gap-1.5">
+          <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+          <span>Reset</span>
+        </button>
+        <button id="btn-view-whitelist" class="text-xs bg-cyan-950/70 hover:bg-cyan-900 border border-cyan-800/80 text-cyan-300 hover:text-cyan-100 px-3 py-1.5 rounded-lg transition flex items-center gap-1.5">
+          <i data-lucide="list-checks" class="w-3.5 h-3.5"></i>
+          <span>Vendors</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Floating Defense Toaster Container -->
+  <div id="toast-container" class="fixed top-20 right-6 z-50 flex flex-col space-y-2.5 max-w-sm w-full pointer-events-none"></div>
+
+  <!-- Main Container -->
+  <main class="max-w-7xl mx-auto w-full px-6 py-6 flex-1 space-y-6">
+
+    <!-- Metrics Ribbon -->
+    <section class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3">
+      <!-- Total Requests -->
+      <div class="bg-cyber-card border border-cyber-border rounded-xl p-4 shadow-sm relative overflow-hidden">
+        <div class="text-[11px] font-medium text-slate-400 tracking-wider uppercase">Transactions</div>
+        <div id="stat-total-requests" class="text-2xl font-black text-white mt-1">0</div>
+        <div class="text-[10px] text-slate-500 mt-1 flex items-center gap-1">
+          <span id="stat-approved-pct" class="text-emerald-400 font-semibold">100%</span> pass rate
+        </div>
+        <div class="absolute -right-2 -bottom-2 opacity-5 text-slate-100">
+          <i data-lucide="activity" class="w-16 h-16"></i>
+        </div>
+      </div>
+
+      <!-- Approved Volume -->
+      <div class="bg-cyber-card border border-cyber-border rounded-xl p-4 shadow-sm relative overflow-hidden">
+        <div class="text-[11px] font-medium text-slate-400 tracking-wider uppercase">Settled Volume</div>
+        <div id="stat-settled-volume" class="text-2xl font-black text-emerald-400 mt-1">$0.00</div>
+        <div class="text-[10px] text-slate-400 mt-1 flex items-center gap-1">
+          <i data-lucide="check-circle-2" class="w-3 h-3 text-emerald-400"></i>
+          <span id="stat-approved-count">0</span> captured
+        </div>
+      </div>
+
+      <!-- Threats Blocked / Dollars Saved -->
+      <div class="bg-cyber-card border border-cyber-border rounded-xl p-4 shadow-sm relative overflow-hidden">
+        <div class="text-[11px] font-medium text-slate-400 tracking-wider uppercase">Capital Defended</div>
+        <div id="stat-dollars-saved" class="text-2xl font-black text-cyan-400 mt-1">$0.00</div>
+        <div class="text-[10px] text-slate-400 mt-1 flex items-center gap-1">
+          <i data-lucide="shield-check" class="w-3 h-3 text-cyan-400"></i>
+          <span id="stat-blocked-count" class="text-rose-400 font-bold">0</span> attacks dropped
+        </div>
+      </div>
+
+      <!-- Avg Cost / Request (Financial Intelligence) -->
+      <div class="bg-cyber-card border border-cyber-border rounded-xl p-4 shadow-sm relative overflow-hidden ring-1 ring-emerald-500/20">
+        <div class="text-[11px] font-medium text-emerald-400 tracking-wider uppercase flex items-center gap-1">
+          <span>Avg Cost / Request</span>
+        </div>
+        <div id="stat-avg-cost" class="text-2xl font-black text-emerald-400 mt-1 font-mono">$0.000000</div>
+        <div class="text-[10px] text-slate-400 mt-1 flex items-center gap-1">
+          <i data-lucide="trending-down" class="w-3 h-3 text-emerald-400"></i>
+          <span id="stat-cost-saved">vs $0.00235 Frontier</span>
+        </div>
+        <div class="absolute -right-2 -bottom-2 opacity-5 text-emerald-400">
+          <i data-lucide="coins" class="w-16 h-16"></i>
+        </div>
+      </div>
+
+      <!-- Zero-Cost Block Rate (Financial Intelligence) -->
+      <div class="bg-cyber-card border border-cyber-border rounded-xl p-4 shadow-sm relative overflow-hidden ring-1 ring-cyan-500/20">
+        <div class="text-[11px] font-medium text-cyan-400 tracking-wider uppercase flex items-center gap-1">
+          <span>Zero-Cost Block Rate</span>
+        </div>
+        <div id="stat-zero-cost-block-rate" class="text-2xl font-black text-cyan-400 mt-1 font-mono">0.0%</div>
+        <div class="text-[10px] text-slate-400 mt-1 flex items-center gap-1">
+          <i data-lucide="shield-percent" class="w-3 h-3 text-cyan-400"></i>
+          <span id="stat-tier1-drop-count">0 Tier-1 $0.00 Drops</span>
+        </div>
+        <div class="absolute -right-2 -bottom-2 opacity-5 text-cyan-400">
+          <i data-lucide="shield-check" class="w-16 h-16"></i>
+        </div>
+      </div>
+
+      <!-- Tier-1 Latency -->
+      <div class="bg-cyber-card border border-cyber-border rounded-xl p-4 shadow-sm relative overflow-hidden">
+        <div class="text-[11px] font-medium text-slate-400 tracking-wider uppercase">Tier-1 Heuristics</div>
+        <div id="stat-tier1-latency" class="text-2xl font-black text-amber-400 mt-1">&lt; 1.5ms</div>
+        <div class="text-[10px] text-slate-400 mt-1 flex items-center gap-1">
+          <i data-lucide="zap" class="w-3 h-3 text-amber-400"></i>
+          <span>Zero LLM cost</span>
+        </div>
+      </div>
+
+      <!-- Tier-2 Latency -->
+      <div class="bg-cyber-card border border-cyber-border rounded-xl p-4 shadow-sm relative overflow-hidden">
+        <div class="text-[11px] font-medium text-slate-400 tracking-wider uppercase">Tier-2 Semantic</div>
+        <div id="stat-tier2-latency" class="text-2xl font-black text-purple-400 mt-1">~180ms</div>
+        <div class="text-[10px] text-slate-400 mt-1 flex items-center gap-1">
+          <i data-lucide="sparkles" class="w-3 h-3 text-purple-400"></i>
+          <span id="stat-model-label">Gemini 1.5 Flash</span>
+        </div>
+      </div>
+
+      <!-- PayPal Gateway Latency -->
+      <div class="bg-cyber-card border border-cyber-border rounded-xl p-4 shadow-sm relative overflow-hidden">
+        <div class="text-[11px] font-medium text-slate-400 tracking-wider uppercase">PayPal Gateway</div>
+        <div id="stat-paypal-latency" class="text-2xl font-black text-sky-400 mt-1">~210ms</div>
+        <div class="text-[10px] text-slate-400 mt-1 flex items-center gap-1">
+          <i data-lucide="landmark" class="w-3 h-3 text-sky-400"></i>
+          <span>Orders API v2</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Simulation Studio & Pipeline Architecture -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+      <!-- Left Column: Simulator & Test Console (5 cols) -->
+      <section class="lg:col-span-5 bg-cyber-card border border-cyber-border rounded-2xl p-5 shadow-lg flex flex-col space-y-4">
+        <div class="flex items-center justify-between border-b border-cyber-border pb-3">
+          <div class="flex items-center space-x-2">
+            <i data-lucide="terminal" class="w-5 h-5 text-cyan-400"></i>
+            <h2 class="text-base font-bold text-white">Simulator &amp; Test Console</h2>
+          </div>
+          <span class="text-[10px] font-mono bg-cyan-950/80 text-cyan-300 border border-cyan-800/80 px-2 py-0.5 rounded">POST /api/v1/pay</span>
+        </div>
+
+        <p class="text-xs text-slate-300">
+          Trigger one of the 4 preset attack vectors or enter a custom payload to inspect the inline Zero-Trust firewall pipeline in real-time.
+        </p>
+
+        <!-- 4 Preset Test Buttons -->
+        <div class="space-y-2">
+          <div class="text-[10px] uppercase font-bold tracking-wider text-slate-400 flex items-center justify-between">
+            <span>4 Preset Scenarios</span>
+            <span class="text-slate-500 font-mono text-[9px]">1-Click Execution</span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2">
+            <!-- Preset 1: Safe Transaction -->
+            <button id="sim-btn-safe" class="group text-left p-2.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800 hover:border-emerald-500/60 transition flex flex-col justify-between space-y-1">
+              <div class="flex items-center justify-between w-full">
+                <span class="flex items-center gap-1.5 text-xs font-bold text-slate-200 group-hover:text-white">
+                  <span class="w-2 h-2 rounded-full bg-emerald-400"></span> Safe Transaction
+                </span>
+                <span class="text-[9px] text-emerald-400 font-semibold px-1.5 py-0.5 bg-emerald-950/80 rounded border border-emerald-800/80">Pass</span>
+              </div>
+              <p class="text-[10px] text-slate-400 line-clamp-1">Figma $144.00 (billing@figma.com)</p>
+            </button>
+
+            <!-- Preset 2: Prompt Injection Attack -->
+            <button id="sim-btn-injection" class="group text-left p-2.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800 hover:border-rose-500/60 transition flex flex-col justify-between space-y-1">
+              <div class="flex items-center justify-between w-full">
+                <span class="flex items-center gap-1.5 text-xs font-bold text-slate-200 group-hover:text-white">
+                  <span class="w-2 h-2 rounded-full bg-rose-500"></span> Prompt Injection
+                </span>
+                <span class="text-[9px] text-rose-400 font-semibold px-1.5 py-0.5 bg-rose-950/80 rounded border border-rose-800/80">Block</span>
+              </div>
+              <p class="text-[10px] text-slate-400 line-clamp-1">Admin override &rarr; attacker escrow</p>
+            </button>
+
+            <!-- Preset 3: Salami Burst -->
+            <button id="sim-btn-salami" class="group text-left p-2.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800 hover:border-amber-500/60 transition flex flex-col justify-between space-y-1">
+              <div class="flex items-center justify-between w-full">
+                <span class="flex items-center gap-1.5 text-xs font-bold text-slate-200 group-hover:text-white">
+                  <span class="w-2 h-2 rounded-full bg-amber-400"></span> Salami Burst
+                </span>
+                <span class="text-[9px] text-amber-400 font-semibold px-1.5 py-0.5 bg-amber-950/80 rounded border border-amber-800/80">Throttle</span>
+              </div>
+              <p class="text-[10px] text-slate-400 line-clamp-1">12 rapid micro-tx loops ($0.99)</p>
+            </button>
+
+            <!-- Preset 4: Typo-squatted Vendor -->
+            <button id="sim-btn-typo" class="group text-left p-2.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800 hover:border-purple-500/60 transition flex flex-col justify-between space-y-1">
+              <div class="flex items-center justify-between w-full">
+                <span class="flex items-center gap-1.5 text-xs font-bold text-slate-200 group-hover:text-white">
+                  <span class="w-2 h-2 rounded-full bg-purple-400"></span> Typo-squatted
+                </span>
+                <span class="text-[9px] text-purple-400 font-semibold px-1.5 py-0.5 bg-purple-950/80 rounded border border-purple-800/80">Block</span>
+              </div>
+              <p class="text-[10px] text-slate-400 line-clamp-1">amaz0n-billing.net spoof</p>
+            </button>
+
+            <!-- Preset 5: HITL Triaging State (Medium Risk Zone 31-70) -->
+            <button id="sim-btn-hitl" class="group text-left p-2.5 rounded-xl bg-gradient-to-r from-amber-950/50 to-slate-900/90 hover:bg-slate-800 border border-amber-500/60 hover:border-amber-400 transition flex flex-col justify-between space-y-1 col-span-2">
+              <div class="flex items-center justify-between w-full">
+                <span class="flex items-center gap-1.5 text-xs font-bold text-amber-300 group-hover:text-amber-200">
+                  <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span> HITL Triaging (Human-in-the-Loop)
+                </span>
+                <span class="text-[9px] text-amber-300 font-semibold px-1.5 py-0.5 bg-amber-950 rounded border border-amber-800">Score: 52 • 2FA Pending</span>
+              </div>
+              <p class="text-[10px] text-slate-400 line-clamp-1">Ambiguous intent &rarr; Suspends execution in Medium Risk Zone for manual approval</p>
+            </button>
+          </div>
+        </div>
+
+        <!-- Custom Manual Payload Entry Form -->
+        <div class="bg-slate-950/70 border border-slate-800 rounded-xl p-3 text-xs space-y-2.5">
+          <div class="flex items-center justify-between font-semibold text-slate-300">
+            <span class="flex items-center gap-1.5 text-cyan-400">
+              <i data-lucide="sliders" class="w-3.5 h-3.5"></i> Custom Manual Payload Entry
+            </span>
+            <span class="text-[9px] text-slate-500 font-mono">POST /api/v1/pay</span>
+          </div>
+
+          <form id="custom-tx-form" class="space-y-2">
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-[9px] uppercase text-slate-400 font-semibold mb-0.5">Agent ID</label>
+                <input type="text" id="cust-agent-id" value="autonomous_agent_procure_09" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-slate-200 text-xs focus:border-cyan-500 focus:outline-none">
+              </div>
+              <div>
+                <label class="block text-[9px] uppercase text-slate-400 font-semibold mb-0.5">Amount (USD)</label>
+                <input type="number" step="0.01" id="cust-amount" value="10.00" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-slate-200 text-xs focus:border-cyan-500 focus:outline-none">
+              </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-2">
+              <div class="col-span-2">
+                <label class="block text-[9px] uppercase text-slate-400 font-semibold mb-0.5">Recipient Payee Email</label>
+                <input type="text" id="cust-recipient" value="payments@openai.com" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-slate-200 text-xs focus:border-cyan-500 focus:outline-none">
+              </div>
+              <div>
+                <label class="block text-[9px] uppercase text-slate-400 font-semibold mb-0.5">Currency</label>
+                <input type="text" id="cust-currency" value="USD" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-slate-200 text-xs focus:border-cyan-500 focus:outline-none">
+              </div>
+            </div>
+
+            <!-- Dynamic Model Selector -->
+            <div>
+              <div class="flex items-center justify-between mb-0.5">
+                <label class="block text-[9px] uppercase text-slate-400 font-semibold">Active Evaluation Model</label>
+                <span id="model-pricing-tag" class="text-[9px] font-mono text-cyan-400 bg-cyan-950/80 px-1.5 py-0.2 rounded border border-cyan-800/60">$0.075 / 1M in • $0.30 / 1M out</span>
+              </div>
+              <select id="cust-model" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-slate-200 text-xs focus:border-cyan-500 focus:outline-none font-mono">
+                <option value="gemini-1.5-flash" selected>gemini-1.5-flash ($0.075 / 1M in, $0.30 / 1M out — Fast)</option>
+                <option value="gemini-1.5-pro">gemini-1.5-pro ($1.25 / 1M in, $5.00 / 1M out — Deep Reasoning)</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-[9px] uppercase text-slate-400 font-semibold mb-0.5">Declared User Intent</label>
+              <input type="text" id="cust-user-intent" value="Purchase 10,000 API credits from OpenAI for developer test suite" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-slate-200 text-xs focus:border-cyan-500 focus:outline-none">
+            </div>
+
+            <div>
+              <label class="block text-[9px] uppercase text-slate-400 font-semibold mb-0.5">Agent Context Window / Scratchpad</label>
+              <textarea id="cust-context" rows="2" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-slate-200 text-xs focus:border-cyan-500 focus:outline-none" placeholder="Agent reasoning scratchpad, incoming invoice context, or injected text..."></textarea>
+            </div>
+
+            <button type="submit" id="btn-submit-tx" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-semibold py-1.5 px-3 rounded text-xs transition flex items-center justify-center gap-1.5 shadow-lg shadow-cyan-600/20">
+              <i data-lucide="send" class="w-3.5 h-3.5"></i>
+              <span>Send POST /api/v1/pay</span>
+            </button>
+          </form>
+        </div>
+
+        <!-- Real-Time Inspection Results Section -->
+        <div id="console-results-section" class="border border-slate-800 rounded-xl bg-slate-950/80 p-3 text-xs space-y-2">
+          <div class="flex items-center justify-between pb-1 border-b border-slate-800/80">
+            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+              <i data-lucide="cpu" class="w-3.5 h-3.5 text-cyan-400"></i> Real-Time Inspection Results
+            </span>
+            <span id="console-res-status-badge" class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-900 text-slate-400 border border-slate-800">
+              Awaiting Payload...
+            </span>
+          </div>
+
+          <!-- Empty Result Prompt -->
+          <div id="console-results-empty" class="py-4 text-center text-slate-500 space-y-1">
+            <p class="text-[11px]">No transaction executed yet in this session.</p>
+            <p class="text-[10px] text-slate-600">Click any preset test button above or submit the custom form to view live inspection breakdown.</p>
+          </div>
+
+          <!-- Populated Result View (hidden by default) -->
+          <div id="console-results-data" class="hidden space-y-2.5">
+            <!-- Summary Banner -->
+            <div id="console-summary-box" class="p-2.5 rounded-lg border font-mono text-[11px] space-y-1">
+              <div class="flex items-center justify-between">
+                <span id="console-decision-label" class="font-bold">STATUS</span>
+                <span id="console-threat-score" class="text-[10px]">Threat Score: 0/100</span>
+              </div>
+              <div id="console-reason-text" class="text-[10px] text-slate-300">Reason</div>
+              <div id="console-paypal-order" class="text-[10px] text-cyan-300"></div>
+            </div>
+
+            <!-- Risk vs. Confidence Radial Gauge Component -->
+            <div id="risk-gauge-card" class="p-2.5 rounded-xl border border-slate-800 bg-slate-900/90 flex items-center justify-between gap-3 shadow-inner">
+              <div class="flex items-center gap-3">
+                <div class="relative w-14 h-14 flex items-center justify-center shrink-0">
+                  <svg class="w-14 h-14 transform -rotate-90" viewBox="0 0 36 36">
+                    <path class="text-slate-800" stroke-width="3.5" stroke="currentColor" fill="none"
+                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <path id="gauge-progress-circle" stroke-width="3.5" stroke-dasharray="0, 100" stroke-linecap="round" stroke="currentColor" fill="none"
+                      class="text-emerald-400 transition-all duration-700 ease-out"
+                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                  </svg>
+                  <div class="absolute flex flex-col items-center justify-center text-center">
+                    <span id="gauge-score-value" class="text-sm font-black text-white font-mono leading-none">0</span>
+                    <span class="text-[7px] text-slate-400 uppercase tracking-tighter">score</span>
+                  </div>
+                </div>
+                <div class="space-y-0.5">
+                  <div class="text-[9px] uppercase font-semibold text-slate-400 tracking-wider">Risk vs. Confidence Engine</div>
+                  <div id="gauge-zone-label" class="text-xs font-bold text-emerald-400">Autonomous Clearance</div>
+                  <div id="gauge-zone-desc" class="text-[10px] text-slate-400 line-clamp-1">Score in Low Risk zone (0-30). Direct PayPal execution authorized.</div>
+                </div>
+              </div>
+              <div id="gauge-zone-pill" class="shrink-0 text-[10px] font-mono px-2 py-1 rounded-full border border-emerald-800/80 bg-emerald-950/80 text-emerald-300 font-bold">
+                0-30 LOW
+              </div>
+            </div>
+
+            <!-- HITL Triaging Action Dialog (Shown when score 31-70) -->
+            <div id="hitl-action-dialog" class="hidden p-3 rounded-xl border border-amber-500/80 bg-gradient-to-r from-amber-950/80 via-slate-900 to-amber-950/80 shadow-lg shadow-amber-950/40 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="inline-flex items-center gap-1.5 text-xs font-bold text-amber-300">
+                  <i data-lucide="shield-alert" class="w-4 h-4 text-amber-400 animate-pulse"></i>
+                  Pending Human Approval (Score: <span id="hitl-badge-score">52</span>)
+                </span>
+                <span class="text-[9px] font-mono bg-amber-950 px-2 py-0.5 rounded text-amber-200 border border-amber-800">
+                  HITL Triaging Required
+                </span>
+              </div>
+              <p class="text-[11px] text-slate-300" id="hitl-prompt-text">
+                This transaction landed in the Medium Risk Operational Zone (31-70). Automated execution is suspended until confirmed by an authorized administrator.
+              </p>
+              <div class="flex items-center gap-2 pt-1">
+                <button id="btn-hitl-approve" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-1.5 px-3 rounded-lg text-xs transition flex items-center justify-center gap-1.5 shadow-md shadow-emerald-700/20">
+                  <i data-lucide="check-circle" class="w-3.5 h-3.5"></i>
+                  <span>Approve &amp; Execute PayPal Capture</span>
+                </button>
+                <button id="btn-hitl-reject" class="bg-rose-900/80 hover:bg-rose-800 text-rose-200 hover:text-white font-semibold py-1.5 px-3 rounded-lg text-xs transition flex items-center justify-center gap-1.5 border border-rose-700/60">
+                  <i data-lucide="x-circle" class="w-3.5 h-3.5"></i>
+                  <span>Reject &amp; Drop</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Latency Profile -->
+            <div class="grid grid-cols-4 gap-1.5 text-center font-mono text-[10px]">
+              <div class="bg-slate-900/90 p-1.5 rounded border border-slate-800">
+                <div class="text-slate-400 text-[9px]">Tier-1</div>
+                <div id="console-lat-t1" class="text-amber-400 font-bold">0ms</div>
+              </div>
+              <div class="bg-slate-900/90 p-1.5 rounded border border-slate-800">
+                <div class="text-slate-400 text-[9px]">Tier-2</div>
+                <div id="console-lat-t2" class="text-purple-400 font-bold">0ms</div>
+              </div>
+              <div class="bg-slate-900/90 p-1.5 rounded border border-slate-800">
+                <div class="text-slate-400 text-[9px]">PayPal</div>
+                <div id="console-lat-pp" class="text-sky-400 font-bold">0ms</div>
+              </div>
+              <div class="bg-slate-900/90 p-1.5 rounded border border-slate-800">
+                <div class="text-slate-400 text-[9px]">Total E2E</div>
+                <div id="console-lat-total" class="text-white font-bold">0ms</div>
+              </div>
+            </div>
+
+            <!-- Collapsible Raw JSON Viewer -->
+            <details class="bg-slate-900/90 border border-slate-800/80 rounded p-2 text-[10px]">
+              <summary class="cursor-pointer text-slate-400 hover:text-slate-200 font-mono font-semibold flex items-center justify-between">
+                <span>View Full JSON Inspection Response</span>
+                <span class="text-[9px] text-cyan-400">Toggle JSON</span>
+              </summary>
+              <pre id="console-json-viewer" class="mt-2 text-[10px] text-cyan-300 bg-black/60 p-2 rounded overflow-x-auto font-mono max-h-36 overflow-y-auto"></pre>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Column: Live Telemetry Stream (7 cols) -->
+      <section class="lg:col-span-7 bg-cyber-card border border-cyber-border rounded-2xl p-5 shadow-lg flex flex-col">
+        <div class="flex items-center justify-between border-b border-cyber-border pb-3">
+          <div class="flex items-center space-x-2">
+            <i data-lucide="shield-check" class="w-5 h-5 text-emerald-400"></i>
+            <h2 class="text-base font-bold text-white">Live Zero-Trust Decision Stream</h2>
+          </div>
+          <div class="flex items-center space-x-2">
+            <span class="text-[11px] text-slate-400 font-mono" id="stream-count-label">Showing recent events</span>
+          </div>
+        </div>
+
+        <!-- Telemetry Stream Feed Container -->
+        <div id="events-feed" class="flex-1 overflow-y-auto max-h-[540px] divide-y divide-slate-800/60 mt-3 pr-1 space-y-2">
+          <!-- Empty State -->
+          <div id="empty-state" class="py-16 text-center text-slate-500 space-y-2">
+            <i data-lucide="radar" class="w-10 h-10 mx-auto text-slate-600 animate-spin"></i>
+            <p class="text-xs">Listening to Zero-Trust Telemetry Pipeline...</p>
+            <p class="text-[11px] text-slate-600">Trigger any simulation scenario on the left to inspect decisions in real-time.</p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+  </main>
+
+  <!-- Approved Vendors Modal -->
+  <div id="modal-whitelist" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-cyber-card border border-cyber-border rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-2xl">
+      <div class="flex items-center justify-between border-b border-cyber-border pb-3">
+        <div class="flex items-center space-x-2">
+          <i data-lucide="list-checks" class="w-5 h-5 text-cyan-400"></i>
+          <h3 class="text-base font-bold text-white">Approved Enterprise Vendor Whitelist</h3>
+        </div>
+        <button id="btn-close-modal" class="text-slate-400 hover:text-white p-1 rounded-lg">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="text-xs text-slate-300">
+        In Tier-1, exact regex checks enforce zero-trust counterparty integrity in &lt;1ms. Typo-squatted domains (e.g. <code>amaz0n-billing.net</code>) are automatically rejected prior to calling any LLM.
+      </div>
+
+      <div class="overflow-x-auto max-h-80 overflow-y-auto">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead>
+            <tr class="border-b border-slate-800 text-slate-400 font-semibold uppercase text-[10px]">
+              <th class="py-2 px-3">Vendor Name</th>
+              <th class="py-2 px-3">Approved Payee Email</th>
+              <th class="py-2 px-3">Category</th>
+            </tr>
+          </thead>
+          <tbody id="whitelist-table-body" class="divide-y divide-slate-800/60 font-mono text-[11px] text-slate-300">
+            <!-- Populated dynamically -->
+          </tbody>
+        </table>
+      </div>
+
+      <div class="flex justify-end pt-2 border-t border-cyber-border">
+        <button id="btn-modal-done" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs px-4 py-2 rounded-lg font-medium">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="border-t border-cyber-border bg-[#090d16] px-6 py-4 text-center text-xs text-slate-500">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-2">
+      <div class="flex items-center space-x-2">
+        <span class="font-bold text-slate-400">PromptPay Guard</span>
+        <span>— Autonomous AI Agent Payment Firewall</span>
+      </div>
+      <div class="text-[11px] text-slate-400">
+        Targeting <span class="text-cyan-400 font-semibold">PayPal AI Hackathon 2026</span> • Zero-Trust • Sub-5ms Fast Heuristics • Gemini 1.5 Flash
+      </div>
+    </div>
+  </footer>
+
+  <!-- Dashboard JavaScript -->
+  <script src="/app.js"></script>
+</body>
+</html>

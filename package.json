@@ -1,0 +1,44 @@
+{
+  "name": "promptpay-guard",
+  "version": "1.0.0",
+  "description": "Zero-Trust AI Agent Payment Firewall for PayPal Orders API v2",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "test:safe": "node scripts/simulate-safe-transaction.js",
+    "test:injection": "node scripts/simulate-prompt-injection.js",
+    "test:salami": "node scripts/simulate-salami-attack.js",
+    "test:security": "node --test tests/security.test.js",
+    "test:resilience": "node --test tests/resilience-fail-secure.test.js",
+    "test:models": "node --test tests/dynamic-model-metrics.test.js",
+    "test:audit": "node --test tests/audit-webhook-hitl.test.js",
+    "test:edge": "node --test tests/edge-cases-remediation.test.js",
+    "test:load": "node tests/load-test.js",
+    "test:all": "node scripts/run-all-tests.js",
+    "cost:report": "node scripts/generate-cost-report.js"
+  },
+  "keywords": [
+    "paypal",
+    "ai-agent",
+    "security-firewall",
+    "zero-trust",
+    "gemini",
+    "prompt-injection",
+    "hackathon"
+  ],
+  "author": "PromptPay Guard Team",
+  "license": "MIT",
+  "dependencies": {
+    "@google/generative-ai": "^0.24.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-rate-limit": "^8.7.1",
+    "helmet": "^8.3.0"
+  },
+  "devDependencies": {
+    "supertest": "^7.3.1"
+  }
+}
