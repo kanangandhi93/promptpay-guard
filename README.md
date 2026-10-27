@@ -87,6 +87,10 @@ Rather than using generic, expensive frontier models, **PromptPay Guard** was sp
 
 ## 🏛️ System Architecture & Request Lifecycle
 
+<p align="center">
+  <img src="docs/promptpay-guard-architecture.png" alt="PromptPay Guard Architecture: Two-Tier Zero-Trust Gateway for Autonomous Agent Payments" width="100%" />
+</p>
+
 ```mermaid
 flowchart TD
     classDef agent fill:#1e293b,stroke:#06b6d4,stroke-width:2px,color:#fff;

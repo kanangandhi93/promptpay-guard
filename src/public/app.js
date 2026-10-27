@@ -1015,4 +1015,30 @@ document.addEventListener('DOMContentLoaded', () => {
       modalWhitelist.classList.add('hidden');
     });
   }
+
+  // -------------------------------------------------------------
+  // Architecture Modal Handler
+  // -------------------------------------------------------------
+  const modalArch = document.getElementById('modal-arch');
+  const btnViewArch = document.getElementById('btn-view-arch');
+  const btnCloseArchModal = document.getElementById('btn-close-arch-modal');
+  const btnArchModalDone = document.getElementById('btn-arch-modal-done');
+
+  if (btnViewArch && modalArch) {
+    btnViewArch.addEventListener('click', () => {
+      modalArch.classList.remove('hidden');
+    });
+  }
+
+  if (btnCloseArchModal && modalArch) {
+    btnCloseArchModal.addEventListener('click', () => {
+      modalArch.classList.add('hidden');
+    });
+  }
+
+  if (btnArchModalDone && modalArch) {
+    btnArchModalDone.addEventListener('click', () => {
+      modalArch.classList.add('hidden');
+    });
+  }
 });
