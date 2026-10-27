@@ -1,6 +1,8 @@
-# 🛡️ PromptPay Guard
-
 <div align="center">
+
+<img src="docs/promptpay-guard-banner.png" alt="PromptPay Guard - Zero-Trust Security Gateway for Autonomous AI Agent Payments on PayPal Orders API v2" width="100%" />
+
+# 🛡️ PromptPay Guard
 
 **Zero-Trust Low-Latency Security Firewall for Autonomous AI Agent Payments on PayPal Orders API v2**
 
