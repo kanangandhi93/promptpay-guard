@@ -15,7 +15,7 @@
 
 *Built for the **PayPal AI Hackathon 2026** • Autonomous Agent Commerce & FinTech Track*
 
-[📺 Watch on YouTube](https://youtu.be/2_1kc6dqQbE) • [🎥 Watch on Loom](https://www.loom.com/share/7d3de0a2bc9f4cd8be16d7e94b46700a) • [Why Gemini 1.5?](#-why-google-gemini-15) • [Edge Cases Defense](#️-overcoming-architectural-blind-spots--edge-cases) • [Live Dashboard](#-interactive-telemetry-dashboard--simulator) • [Architecture](#-system-architecture--request-lifecycle) • [3-Zone Risk Engine](#-3-zone-operational-risk-engine--radial-gauge) • [Quickstart](#-quickstart-guide) • [API Reference](#-complete-api-reference)
+[📺 Watch on YouTube](https://youtu.be/2_1kc6dqQbE) • [🎥 Watch on Loom](https://www.loom.com/share/7d3de0a2bc9f4cd8be16d7e94b46700a) • [Why Gemini 1.5?](#-why-google-gemini-15) • [Edge Cases Defense](#️-overcoming-architectural-blind-spots--edge-cases) • [Screenshots](#-live-dashboard--defense-screenshots) • [Live Dashboard](#-interactive-telemetry-dashboard--simulator) • [Architecture](#-system-architecture--request-lifecycle) • [3-Zone Risk Engine](#-3-zone-operational-risk-engine--radial-gauge) • [Quickstart](#-quickstart-guide) • [API Reference](#-complete-api-reference)
 
 </div>
 
@@ -281,6 +281,16 @@ Access the real-time dark-mode command center at `http://localhost:3000`:
 * **Manual Custom Payload Tester:** Form allowing arbitrary agent IDs, declared intents, amounts, recipient emails, and scratchpad context windows.
 * **Animated Defense Toasters:** Real-time notification banners detailing intercepted threat categories.
 
+### 📸 Live Dashboard & Defense Screenshots
+
+| 🟢 Autonomous Clearance & Settlement | 🟡 Human-in-the-Loop (HITL) Suspension |
+| :---: | :---: |
+| <img src="docs/screenshots/01-safe-transaction-settled.png" alt="Approved & Settled" width="100%" /><br/>*Legitimate agent payment ($144 Figma) cleared & captured via PayPal API v2* | <img src="docs/screenshots/02-hitl-triaging-suspended.png" alt="HITL Triaging Suspended" width="100%" /><br/>*Medium risk payment (Score 52) suspended for 1-click admin approval* |
+
+| 🔴 Salami Micro-Drain Throttled (Tier-1) | 🧪 Automated Test Verification Suite |
+| :---: | :---: |
+| <img src="docs/screenshots/03-salami-microdrain-throttled.png" alt="Salami Micro-Drain Throttled" width="100%" /><br/>*12 rapid micro-payments instantly throttled in 0.05ms at $0.00 cost* | <img src="docs/screenshots/04-terminal-test-suite-passing.png" alt="Automated Test Suites Passing" width="100%" /><br/>*100% pass rate across PRD functional tests (9/9) & Enterprise Edge Cases (8/8)* |
+
 ---
 
 ## ⚡ Quickstart Guide
@@ -534,6 +544,10 @@ npm run test:load
 | **Dynamic Models & Metrics Suite** | [`tests/dynamic-model-metrics.test.js`](file:///d:/02%20AI%20agent%20application/03%20Projects/13%20hackathon/paypal/tests/dynamic-model-metrics.test.js) | **7** | Gemini 1.5 Flash vs Pro provider adapter, exact token usage pricing, `/api/v1/metrics` frontier savings telemetry | ✅ **7/7 PASS** |
 | **PRD Core Functional Suite** | [`scripts/run-all-tests.js`](file:///d:/02%20AI%20agent%20application/03%20Projects/13%20hackathon/paypal/scripts/run-all-tests.js) | **9** | PRD TC-POS-01..03, TC-NEG-01..06 core business validation matrix | ✅ **9/9 PASS** |
 | **Total Automated Tests** | — | **60** | **End-to-End Complete Production Coverage** | ✅ **100% PASS** |
+
+<p align="center">
+  <img src="docs/screenshots/04-terminal-test-suite-passing.png" alt="Automated Test Suites Passing in Terminal - 100% Success Rate" width="88%" />
+</p>
 
 ---
 
