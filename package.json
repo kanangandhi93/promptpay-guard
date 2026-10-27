@@ -28,7 +28,7 @@
     "prompt-injection",
     "hackathon"
   ],
-  "author": "PromptPay Guard Team",
+  "author": "Kanan Gandhi",
   "license": "MIT",
   "dependencies": {
     "@google/generative-ai": "^0.24.0",

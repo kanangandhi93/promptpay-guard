@@ -603,7 +603,14 @@ paypal/
 
 ---
 
-## 📄 License & Attribution
+## ⚖️ License & Attribution
 
-Distributed under the **MIT License**. See [`LICENSE`](LICENSE) for details.  
-Created with ❤️ by the **PromptPay Guard Team** for the **PayPal AI Hackathon 2026**.
+This project is licensed under the terms of the **MIT License** (or **Apache License 2.0**).  
+See the [LICENSE](LICENSE) file for complete details.
+
+### 👤 Author & Architecture
+* **Original Creator & Lead Architect:** Kanan Gandhi
+* **Submission Platform:** PayPal AI Agent Hackathon 2026
+* **Project Showcase:** [Devpost Project](https://devpost.com/software/promptpay-guard) | [YouTube Demonstration](https://youtu.be/2_1kc6dqQbE)
+
+> **Notice:** "PromptPay Guard", its Two-Tier Zero-Trust heuristics pipeline, radial risk assessment workflows, and architectural designs are original intellectual work developed by Kanan Gandhi. Any public re-distribution, derivative research, or implementation must retain proper attribution to the original author.
