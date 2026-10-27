@@ -10,12 +10,23 @@
 [![Test Suite](https://img.shields.io/badge/Tests-60%2F60%20Passing%20(100%25)-10B981?style=for-the-badge&logo=checkmarx&logoColor=white)](#-automated-testing--verification-suites)
 [![OpEx Savings](https://img.shields.io/badge/OpEx%20Savings-98.8%25%20vs%20Frontier-06B6D4?style=for-the-badge&logo=googlecloud&logoColor=white)](#-cost-profiling--financial-unit-economics)
 [![License: MIT](https://img.shields.io/badge/License-MIT-F59E0B?style=for-the-badge)](LICENSE)
+[![Watch Demo](https://img.shields.io/badge/▶%20Watch%20Demo-Loom%20Video-E25950?style=for-the-badge&logo=loom&logoColor=white)](https://www.loom.com/share/7d3de0a2bc9f4cd8be16d7e94b46700a)
 
 *Built for the **PayPal AI Hackathon 2026** • Autonomous Agent Commerce & FinTech Track*
 
-[Live Dashboard](#-interactive-telemetry-dashboard--simulator) • [Architecture](#-system-architecture--request-lifecycle) • [3-Zone Risk Engine](#-3-zone-operational-risk-engine--radial-gauge) • [Quickstart](#-quickstart-guide) • [API Reference](#-complete-api-reference) • [Test Suite](#-automated-testing--verification-suites)
+[📺 Watch Demo Video](https://www.loom.com/share/7d3de0a2bc9f4cd8be16d7e94b46700a) • [Live Dashboard](#-interactive-telemetry-dashboard--simulator) • [Architecture](#-system-architecture--request-lifecycle) • [3-Zone Risk Engine](#-3-zone-operational-risk-engine--radial-gauge) • [Quickstart](#-quickstart-guide) • [API Reference](#-complete-api-reference) • [Test Suite](#-automated-testing--verification-suites)
 
 </div>
+
+---
+
+## 🎬 Video Walkthrough & Interactive Demo
+
+[![Watch Demo on Loom](https://img.shields.io/badge/▶%20Watch%20Full%20Demo%20on%20Loom-7d3de0-625df5?style=for-the-badge&logo=loom&logoColor=white)](https://www.loom.com/share/7d3de0a2bc9f4cd8be16d7e94b46700a)
+
+> 📹 **Watch the End-to-End Walkthrough:** [https://www.loom.com/share/7d3de0a2bc9f4cd8be16d7e94b46700a](https://www.loom.com/share/7d3de0a2bc9f4cd8be16d7e94b46700a)
+> 
+> *Demonstrates the Two-Tier Zero-Trust pipeline, 5 live attack vector simulations, SVG radial gauge animations, Human-in-the-Loop triaging overrides, and settlement verification with PayPal Orders API v2.*
 
 ---
 
