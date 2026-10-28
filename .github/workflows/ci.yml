@@ -1,0 +1,70 @@
+name: PromptPay Guard CI Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-and-test:
+    name: Test Suite & Security Verification (Node ${{ matrix.node-version }})
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [20.x, 22.x]
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Verify Community Health & Security Files
+        run: |
+          test -f LICENSE || (echo "Missing LICENSE file!" && exit 1)
+          test -f SECURITY.md || (echo "Missing SECURITY.md file!" && exit 1)
+          test -f README.md || (echo "Missing README.md file!" && exit 1)
+          echo "All essential community and security files verified."
+
+      - name: Start Server in Background Daemon
+        run: |
+          node src/index.js &
+          sleep 3
+
+      - name: Verify Health Endpoint
+        run: |
+          curl --fail --retry 3 --retry-delay 2 http://localhost:3000/health
+
+      - name: Execute PRD Core Functional Test Suite (9 Tests)
+        run: npm run test:all
+
+      - name: Execute Enterprise Edge Cases & Remediation Suite (8 Tests)
+        run: npm run test:edge
+
+      - name: Execute Defensive Security & Penetration Audit Suite (18 Tests)
+        run: npm run test:security
+
+      - name: Execute Fail-Secure Resilience & Timeout Suite (5 Tests)
+        run: npm run test:resilience
+
+      - name: Execute Dynamic Model Switching & Pricing Suite (7 Tests)
+        run: npm run test:models
+
+      - name: Execute Audit Ledger, Webhook & HITL Suite (13 Tests)
+        run: npm run test:audit
+
+      - name: Generate Cost Analysis Report
+        run: npm run cost:report
